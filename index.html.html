@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Tracker — TKA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e9ecef;
+  --text:#212529;--muted:#6c757d;--muted2:#adb5bd;
+  --accent:#2f80ed;--accent-bg:#e8f1fd;
+  --green:#2d8a4e;--green-bg:#e6f4ec;
+  --red:#c0392b;--red-bg:#fdecea;
+  --amber:#92610a;--amber-bg:#fef3e2;
+  --purple:#6741d9;--purple-bg:#f0ecff;
+  --gray:#495057;--gray-bg:#f1f3f5;
+  --radius:8px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1b1e;--surface:#25262b;--surface2:#2c2e33;--border:#373a40;
+    --text:#c9cdd4;--muted:#868e96;--muted2:#5c6370;
+    --accent:#4dabf7;--accent-bg:#1a2e45;
+    --green:#40c074;--green-bg:#1a2e22;
+    --red:#fa5252;--red-bg:#2e1a1a;
+    --amber:#fcc419;--amber-bg:#2e2510;
+    --purple:#9775fa;--purple-bg:#241d3a;
+    --gray:#adb5bd;--gray-bg:#2c2e33;
+  }
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
+a{color:var(--accent)}
+.app{max-width:1300px;margin:0 auto;padding:24px 20px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.topbar-left h1{font-size:20px;font-weight:600;color:var(--text)}
+.topbar-left p{font-size:12px;color:var(--muted);margin-top:3px}
+.topbar-right{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border-radius:var(--radius);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:opacity .15s}
+.btn:hover{opacity:.8}
+.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{background:transparent;color:var(--red);border-color:var(--red-bg)}
+.btn-danger:hover{background:var(--red-bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.stat-num{font-size:24px;font-weight:600;line-height:1;margin-bottom:4px}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.toolbar input,.toolbar select{border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;font-size:13px;background:var(--bg);color:var(--text);outline:none}
+.toolbar input{flex:1;min-width:180px}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--accent)}
+.count{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg)}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{padding:10px 13px;font-size:11px;font-weight:600;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+td{padding:11px 13px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background .1s}
+tbody tr:hover td{background:var(--surface)}
+.ellipsis{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.url-cell a{color:var(--accent);text-decoration:none;font-size:12px}
+.url-cell a:hover{text-decoration:underline}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.b-open{background:var(--red-bg);color:var(--red)}
+.b-inprogress{background:var(--amber-bg);color:var(--amber)}
+.b-resolved{background:var(--green-bg);color:var(--green)}
+.b-pending{background:var(--accent-bg);color:var(--accent)}
+.b-wontfix{background:var(--gray-bg);color:var(--gray)}
+.p1{background:var(--red-bg);color:var(--red)}
+.p2{background:var(--amber-bg);color:var(--amber)}
+.p3{background:var(--purple-bg);color:var(--purple)}
+.p4{background:var(--accent-bg);color:var(--accent)}
+.empty{padding:48px;text-align:center;color:var(--muted)}
+.actions{display:flex;gap:6px}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:640px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+.modal-head h2{font-size:16px;font-weight:600}
+.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;padding:2px 6px}
+.close-btn:hover{color:var(--text)}
+.modal-body{padding:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:12px;font-weight:500;color:var(--muted)}
+.fg input,.fg select,.fg textarea{font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:80px;font-family:inherit}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--border)}
+/* DETAIL PANEL */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;display:flex;justify-content:flex-end}
+.drawer{background:var(--bg);width:100%;max-width:460px;height:100%;overflow-y:auto;border-left:1px solid var(--border)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
+.drawer-head h2{font-size:15px;font-weight:600;flex:1;margin-right:12px}
+.drawer-body{padding:20px}
+.df{margin-bottom:16px}
+.df label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
+.df .val{font-size:13px;line-height:1.6}
+.df .val a{color:var(--accent);word-break:break-all}
+.df2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sep{border:none;border-top:1px solid var(--border);margin:16px 0}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+/* IMPORT hidden input */
+#importFile{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>&#128030; Error Tracker</h1>
+      <p>Track and manage website technical errors across all properties</p>
+    </div>
+    <div class="topbar-right">
+      <button class="btn" onclick="exportJSON()">&#8595; Export JSON</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">&#8593; Import JSON</button>
+      <input type="file" id="importFile" accept=".json" onchange="importJSON(event)">
+      <button class="btn btn-primary" onclick="openAdd()">+ Add Error</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search errors, URLs, names…" oninput="render()">
+    <select id="fStatus" onchange="render()">
+      <option value="">All statuses</option>
+      <option>Open</option><option>In Progress</option><option>Resolved</option><option>Pending</option><option>Won't Fix</option>
+    </select>
+    <select id="fPriority" onchange="render()">
+      <option value="">All priorities</option>
+      <option>P1 – Critical</option><option>P2 – High</option><option>P3 – Medium</option><option>P4 – Low</option>
+    </select>
+    <select id="fWebsite" onchange="render()">
+      <option value="">All websites</option>
+    </select>
+    <span class="count" id="rowCount"></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Error Name</th><th>Website</th><th>URL</th>
+          <th>Status</th><th>Priority</th><th>Reported By</th>
+          <th>Developer</th><th>Date</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="empty" class="empty" style="display:none">No errors yet. Click "+ Add Error" to get started.</div>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="overlay" id="modal" style="display:none" onclick="bgClose(event,'modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 id="modal-title">Add error</h2>
+      <button class="close-btn" onclick="closeModal()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg full"><label>Error name *</label><input id="f-name" placeholder="Describe the error"></div>
+        <div class="fg"><label>Website name *</label><input id="f-website" placeholder="e.g. theknowledgeacademy.com"></div>
+        <div class="fg"><label>URL</label><input id="f-url" type="url" placeholder="https://..."></div>
+        <div class="fg"><label>Error status</label>
+          <select id="f-status"><option>Open</option><option>In Progress</option><option>Pending</option><option>Resolved</option><option>Won't Fix</option></select>
+        </div>
+        <div class="fg"><label>Priority</label>
+          <select id="f-priority"><option>P1 – Critical</option><option>P2 – High</option><option>P3 – Medium</option><option>P4 – Low</option></select>
+        </div>
+        <div class="fg"><label>Error given by (Reported by)</label><input id="f-by" placeholder="Name of reporter"></div>
+        <div class="fg"><label>Developer assigned</label><input id="f-dev" placeholder="Developer name"></div>
+        <div class="fg full"><label>Reference / screenshot link</label><input id="f-ref" placeholder="https://snipboard.io/… or any link"></div>
+        <div class="fg full"><label>Comments</label><textarea id="f-comments" placeholder="Describe the error, steps to reproduce, or any extra context…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveError()">Save error</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawer" style="display:none" onclick="bgClose(event,'drawer')">
+  <div class="drawer" onclick="event.stopPropagation()">
+    <div class="drawer-head">
+      <h2 id="d-title"></h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="editFromDrawer()">Edit</button>
+        <button class="close-btn" onclick="closeDrawer()">&#10005;</button>
+      </div>
+    </div>
+    <div class="drawer-body" id="d-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='tka-errors-v3';
+let errors=[], editId=null, detailId=null;
+
+function load(){
+  try{ errors=JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ errors=[]; }
+  render();
+}
+function save(){ localStorage.setItem(KEY,JSON.stringify(errors)); }
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function today(){ const d=new Date(); return `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getFullYear()}`; }
+function esc(s){ return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''; }
+
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+function statusClass(s){
+  const m={'open':'b-open','in progress':'b-inprogress','resolved':'b-resolved','pending':'b-pending',"won't fix":'b-wontfix'};
+  return m[(s||'open').toLowerCase()]||'b-open';
+}
+function prioClass(p){
+  if(!p) return ''; if(p.startsWith('P1')) return 'p1'; if(p.startsWith('P2')) return 'p2';
+  if(p.startsWith('P3')) return 'p3'; if(p.startsWith('P4')) return 'p4'; return '';
+}
+
+function render(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const fS=document.getElementById('fStatus').value;
+  const fP=document.getElementById('fPriority').value;
+  const fW=document.getElementById('fWebsite').value;
+
+  let list=errors.filter(e=>{
+    const txt=[e.name,e.website,e.url,e.by,e.dev,e.comments,e.ref].join(' ').toLowerCase();
+    return(!q||txt.includes(q))&&(!fS||e.status===fS)&&(!fP||e.priority===fP)&&(!fW||e.website===fW);
+  });
+
+  const tbody=document.getElementById('tbody');
+  const empty=document.getElementById('empty');
+  const thead=document.querySelector('thead');
+  tbody.innerHTML='';
+
+  if(!list.length){ empty.style.display='block'; thead.style.display='none'; }
+  else{
+    empty.style.display='none'; thead.style.display='';
+    list.forEach((e,i)=>{
+      const tr=document.createElement('tr');
+      tr.onclick=()=>openDrawer(e.id);
+      const urlShort=e.url?e.url.replace(/^https?:\/\//,'').slice(0,28)+(e.url.length>30?'…':''):'—';
+      tr.innerHTML=`
+        <td style="color:var(--muted);font-size:12px;width:32px">${i+1}</td>
+        <td class="ellipsis" style="font-weight:500;max-width:220px">${esc(e.name)}</td>
+        <td style="color:var(--muted);font-size:12px;white-space:nowrap">${esc(e.website||'—')}</td>
+        <td class="url-cell">${e.url?`<a href="${esc(e.url)}" target="_blank" onclick="event.stopPropagation()">${urlShort}</a>`:'—'}</td>
+        <td><span class="badge ${statusClass(e.status)}">${esc(e.status||'Open')}</span></td>
+        <td><span class="badge ${prioClass(e.priority)}">${esc(e.priority||'—')}</span></td>
+        <td class="ellipsis" style="color:var(--muted)">${esc(e.by||'—')}</td>
+        <td class="ellipsis" style="color:var(--muted)">${esc(e.dev||'—')}</td>
+        <td style="font-size:11px;color:var(--muted);white-space:nowrap">${esc(e.date||'—')}</td>
+        <td onclick="event.stopPropagation()">
+          <div class="actions">
+            <button class="btn btn-sm" onclick="openEdit('${e.id}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="del('${e.id}')">Delete</button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  document.getElementById('rowCount').textContent=`${list.length} of ${errors.length} errors`;
+  renderStats();
+  renderSiteFilter();
+}
+
+function renderStats(){
+  const total=errors.length;
+  const open=errors.filter(e=>!e.status||e.status==='Open').length;
+  const inprog=errors.filter(e=>e.status==='In Progress').length;
+  const resolved=errors.filter(e=>e.status==='Resolved').length;
+  const p1=errors.filter(e=>e.priority&&e.priority.startsWith('P1')).length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-num">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--red)">${open}</div><div class="stat-label">Open</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--amber)">${inprog}</div><div class="stat-label">In Progress</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--green)">${resolved}</div><div class="stat-label">Resolved</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--red)">${p1}</div><div class="stat-label">P1 Critical</div></div>`;
+}
+
+function renderSiteFilter(){
+  const sel=document.getElementById('fWebsite'); const cur=sel.value;
+  const sites=[...new Set(errors.map(e=>e.website).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All websites</option>'+sites.map(s=>`<option${s===cur?' selected':''}>${esc(s)}</option>`).join('');
+}
+
+function openAdd(){
+  editId=null;
+  document.getElementById('modal-title').textContent='Add error';
+  ['name','website','url','by','dev','ref','comments'].forEach(f=>document.getElementById('f-'+f).value='');
+  document.getElementById('f-status').value='Open';
+  document.getElementById('f-priority').value='P3 – Medium';
+  document.getElementById('modal').style.display='flex';
+  setTimeout(()=>document.getElementById('f-name').focus(),50);
+}
+
+function openEdit(id){
+  const e=errors.find(x=>x.id===id); if(!e) return;
+  editId=id;
+  document.getElementById('modal-title').textContent='Edit error';
+  document.getElementById('f-name').value=e.name||'';
+  document.getElementById('f-website').value=e.website||'';
+  document.getElementById('f-url').value=e.url||'';
+  document.getElementById('f-status').value=e.status||'Open';
+  document.getElementById('f-priority').value=e.priority||'P3 – Medium';
+  document.getElementById('f-by').value=e.by||'';
+  document.getElementById('f-dev').value=e.dev||'';
+  document.getElementById('f-ref').value=e.ref||'';
+  document.getElementById('f-comments').value=e.comments||'';
+  document.getElementById('modal').style.display='flex';
+}
+
+function editFromDrawer(){ closeDrawer(); openEdit(detailId); }
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+function saveError(){
+  const name=document.getElementById('f-name').value.trim();
+  const website=document.getElementById('f-website').value.trim();
+  if(!name){ document.getElementById('f-name').focus(); return; }
+  if(!website){ document.getElementById('f-website').focus(); return; }
+  const data={
+    id:editId||uid(), name, website,
+    url:document.getElementById('f-url').value.trim(),
+    status:document.getElementById('f-status').value,
+    priority:document.getElementById('f-priority').value,
+    by:document.getElementById('f-by').value.trim(),
+    dev:document.getElementById('f-dev').value.trim(),
+    ref:document.getElementById('f-ref').value.trim(),
+    comments:document.getElementById('f-comments').value.trim(),
+    date:editId?(errors.find(x=>x.id===editId)?.date||today()):today(),
+  };
+  if(editId){ const i=errors.findIndex(x=>x.id===editId); if(i>-1) errors[i]=data; }
+  else errors.unshift(data);
+  save(); closeModal(); render();
+  toast(editId?'Error updated':'Error added');
+}
+
+function del(id){
+  if(!confirm('Delete this error? This cannot be undone.')) return;
+  errors=errors.filter(x=>x.id!==id); save(); render(); toast('Deleted');
+}
+
+function openDrawer(id){
+  const e=errors.find(x=>x.id===id); if(!e) return;
+  detailId=id;
+  document.getElementById('d-title').textContent=e.name;
+  document.getElementById('d-body').innerHTML=`
+    <div class="df2">
+      <div class="df"><label>Status</label><div class="val"><span class="badge ${statusClass(e.status)}">${esc(e.status||'Open')}</span></div></div>
+      <div class="df"><label>Priority</label><div class="val"><span class="badge ${prioClass(e.priority)}">${esc(e.priority||'—')}</span></div></div>
+    </div><hr class="sep">
+    <div class="df2">
+      <div class="df"><label>Website</label><div class="val">${esc(e.website||'—')}</div></div>
+      <div class="df"><label>Date added</label><div class="val">${esc(e.date||'—')}</div></div>
+    </div>
+    <div class="df"><label>URL</label><div class="val">${e.url?`<a href="${esc(e.url)}" target="_blank">${esc(e.url)}</a>`:'—'}</div></div>
+    <hr class="sep">
+    <div class="df2">
+      <div class="df"><label>Reported by</label><div class="val">${esc(e.by||'—')}</div></div>
+      <div class="df"><label>Developer</label><div class="val">${esc(e.dev||'—')}</div></div>
+    </div>
+    <hr class="sep">
+    <div class="df"><label>Comments</label><div class="val" style="white-space:pre-wrap">${esc(e.comments||'No comments.')}</div></div>
+    ${e.ref?`<div class="df"><label>Reference</label><div class="val"><a href="${esc(e.ref)}" target="_blank">${esc(e.ref)}</a></div></div>`:''}`;
+  document.getElementById('drawer').style.display='flex';
+}
+function closeDrawer(){ document.getElementById('drawer').style.display='none'; }
+
+function bgClose(ev,id){
+  if(ev.target===document.getElementById(id)){
+    id==='modal'?closeModal():closeDrawer();
+  }
+}
+
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(errors,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`error-tracker-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  toast('Exported successfully');
+}
+
+function importJSON(ev){
+  const file=ev.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!Array.isArray(data)) throw new Error('Invalid format');
+      const merge=confirm(`Import ${data.length} errors?\n\nClick OK to MERGE with existing errors.\nClick Cancel to REPLACE all existing errors.`);
+      if(merge){ const ids=new Set(errors.map(x=>x.id)); errors=[...errors,...data.filter(x=>!ids.has(x.id))]; }
+      else errors=data;
+      save(); render(); toast(`Imported ${data.length} errors`);
+    }catch(err){ alert('Invalid JSON file. Please export from this tracker.'); }
+  };
+  reader.readAsText(file);
+  ev.target.value='';
+}
+
+load();
+</script>
+</body>
+</html>
