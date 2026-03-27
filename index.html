@@ -6,584 +6,150 @@
 <title>Error Tracker — TKA</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e9ecef;
-  --text:#212529;--muted:#6c757d;--muted2:#adb5bd;
-  --accent:#2f80ed;--accent-bg:#e8f1fd;
-  --green:#2d8a4e;--green-bg:#e6f4ec;
-  --red:#c0392b;--red-bg:#fdecea;
-  --amber:#92610a;--amber-bg:#fef3e2;
-  --purple:#6741d9;--purple-bg:#f0ecff;
-  --gray:#495057;--gray-bg:#f1f3f5;
-  --radius:8px;--radius-lg:12px;
-}
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#1a1b1e;--surface:#25262b;--surface2:#2c2e33;--border:#373a40;
-    --text:#c9cdd4;--muted:#868e96;--muted2:#5c6370;
-    --accent:#4dabf7;--accent-bg:#1a2e45;
-    --green:#40c074;--green-bg:#1a2e22;
-    --red:#fa5252;--red-bg:#2e1a1a;
-    --amber:#fcc419;--amber-bg:#2e2510;
-    --purple:#9775fa;--purple-bg:#241d3a;
-    --gray:#adb5bd;--gray-bg:#2c2e33;
-  }
-}
+:root{--bg:#fff;--surface:#f8f9fa;--border:#e9ecef;--border2:#dee2e6;--text:#212529;--muted:#6c757d;--accent:#2f80ed;--accent-bg:#e8f1fd;--green:#2d8a4e;--green-bg:#e6f4ec;--red:#c0392b;--red-bg:#fdecea;--amber:#92610a;--amber-bg:#fef3e2;--purple:#6741d9;--purple-bg:#f0ecff;--r:8px;--rl:12px}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1b1e;--surface:#25262b;--border:#373a40;--border2:#495057;--text:#c9cdd4;--muted:#868e96;--accent:#4dabf7;--accent-bg:#1a2e45;--green:#40c074;--green-bg:#1a2e22;--red:#fa5252;--red-bg:#2e1a1a;--amber:#fcc419;--amber-bg:#2e2510;--purple:#9775fa;--purple-bg:#241d3a}}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
 .app{max-width:1400px;margin:0 auto;padding:24px 20px}
-
-/* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.topbar-left h1{font-size:20px;font-weight:600}
-.topbar-left p{font-size:12px;color:var(--muted);margin-top:3px}
-.topbar-right{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.sync-status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--muted2)}
-.dot.live{background:var(--green);box-shadow:0 0 0 3px var(--green-bg)}
-.dot.error{background:var(--red)}
-.dot.syncing{background:var(--amber);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* BUTTONS */
-.btn{border-radius:var(--radius);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:opacity .15s}
-.btn:hover{opacity:.8}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}
-.btn-sm{padding:5px 10px;font-size:12px}
-.btn-danger{background:transparent;color:var(--red);border-color:var(--red-bg)}
-.btn-danger:hover{background:var(--red-bg)}
-.btn-icon{padding:7px 9px;font-size:15px}
-
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-.stat-num{font-size:24px;font-weight:600;line-height:1;margin-bottom:4px}
-.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-
-/* TOOLBAR */
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-.toolbar input,.toolbar select{border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;font-size:13px;background:var(--bg);color:var(--text);outline:none}
-.toolbar input{flex:1;min-width:180px}
-.toolbar input:focus,.toolbar select:focus{border-color:var(--accent)}
-.count{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
-
-/* TABLE */
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg)}
-table{width:100%;border-collapse:collapse;min-width:960px}
+.topbar h1{font-size:20px;font-weight:600}.topbar p{font-size:12px;color:var(--muted);margin-top:3px}
+.tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sync{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}.dot.live{background:var(--green)}.dot.err{background:var(--red)}.dot.spin{background:var(--amber);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn{border-radius:var(--r);padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text);display:inline-flex;align-items:center;gap:5px;transition:opacity .15s}.btn:hover{opacity:.8}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}.btn-sm{padding:4px 9px;font-size:12px}.btn-del{border-color:transparent;color:var(--red)}.btn-del:hover{background:var(--red-bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}.sc-n{font-size:24px;font-weight:600;line-height:1;margin-bottom:4px}.sc-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.bar input,.bar select{border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg);color:var(--text);outline:none}
+.bar input{flex:1;min-width:180px}.bar input:focus,.bar select:focus{border-color:var(--accent)}
+.cnt{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.tw{overflow-x:auto;border:1px solid var(--border);border-radius:var(--rl)}
+table{width:100%;border-collapse:collapse;min-width:900px}
 th{padding:10px 13px;font-size:11px;font-weight:600;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
-td{padding:11px 13px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
-tr:last-child td{border-bottom:none}
-tbody tr{cursor:pointer;transition:background .1s}
-tbody tr:hover td{background:var(--surface)}
-.ellipsis{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.url-cell a{color:var(--accent);text-decoration:none;font-size:12px}
-.url-cell a:hover{text-decoration:underline}
-.actions{display:flex;gap:6px}
-
-/* BADGES */
+td{padding:11px 13px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}tbody tr{cursor:pointer;transition:background .1s}tbody tr:hover td{background:var(--surface)}
+.el{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uc a{color:var(--accent);text-decoration:none;font-size:12px}.uc a:hover{text-decoration:underline}
 .badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap}
-.b-open{background:var(--red-bg);color:var(--red)}
-.b-inprogress{background:var(--amber-bg);color:var(--amber)}
-.b-resolved{background:var(--green-bg);color:var(--green)}
-.b-pending{background:var(--accent-bg);color:var(--accent)}
-.b-wontfix{background:var(--gray-bg);color:var(--gray)}
-.p1{background:var(--red-bg);color:var(--red)}
-.p2{background:var(--amber-bg);color:var(--amber)}
-.p3{background:var(--purple-bg);color:var(--purple)}
-.p4{background:var(--accent-bg);color:var(--accent)}
-
-/* EMPTY & LOADING */
-.empty{padding:56px;text-align:center;color:var(--muted)}
-.empty-icon{font-size:36px;margin-bottom:12px}
-.loading-wrap{padding:56px;text-align:center;color:var(--muted)}
-.spinner{display:inline-block;width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
-.modal{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:640px;box-shadow:0 8px 32px rgba(0,0,0,.12)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
-.modal-head h2{font-size:16px;font-weight:600}
-.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;padding:2px 6px}
-.close-btn:hover{color:var(--text)}
-.modal-body{padding:20px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.fg{display:flex;flex-direction:column;gap:5px}
-.fg.full{grid-column:1/-1}
-.fg label{font-size:12px;font-weight:500;color:var(--muted)}
-.fg label span{color:var(--red);margin-left:2px}
-.fg input,.fg select,.fg textarea{font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;font-family:inherit}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,128,237,.1)}
-.fg textarea{resize:vertical;min-height:80px}
-.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--border)}
-
-/* DRAWER */
-.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:flex;justify-content:flex-end}
-.drawer{background:var(--bg);width:100%;max-width:460px;height:100%;overflow-y:auto;border-left:1px solid var(--border);box-shadow:-8px 0 32px rgba(0,0,0,.08)}
-.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
-.drawer-head h2{font-size:15px;font-weight:600;flex:1;margin-right:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.drawer-body{padding:20px}
-.df{margin-bottom:16px}
+.b-open{background:var(--red-bg);color:var(--red)}.b-ip{background:var(--amber-bg);color:var(--amber)}.b-res{background:var(--green-bg);color:var(--green)}.b-pen{background:var(--accent-bg);color:var(--accent)}.b-wf{background:var(--surface);color:var(--muted)}
+.p1{background:var(--red-bg);color:var(--red)}.p2{background:var(--amber-bg);color:var(--amber)}.p3{background:var(--purple-bg);color:var(--purple)}.p4{background:var(--accent-bg);color:var(--accent)}
+.acts{display:flex;gap:4px}
+.empty{padding:56px;text-align:center;color:var(--muted);font-size:13px}
+.loading{padding:56px;text-align:center;color:var(--muted);font-size:13px}
+.spin-ring{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite;margin:0 auto 12px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.banner{border-radius:var(--r);padding:11px 16px;font-size:13px;margin-bottom:16px;align-items:center;gap:8px;flex-wrap:wrap;display:none}.banner.warn{background:var(--amber-bg);color:var(--amber)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);width:100%;max-width:640px}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}.mh h2{font-size:16px;font-weight:600}
+.xbtn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;padding:2px 6px}.xbtn:hover{color:var(--text)}
+.mb{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fi{display:flex;flex-direction:column;gap:5px}.fi.full{grid-column:1/-1}
+.fi label{font-size:12px;font-weight:500;color:var(--muted)}.fi label em{color:var(--red);font-style:normal}
+.fi input,.fi select,.fi textarea{font-size:13px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;font-family:inherit}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent)}.fi textarea{resize:vertical;min-height:80px}
+.mf{display:flex;justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--border)}
+.dov{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:flex;justify-content:flex-end}
+.drawer{background:var(--bg);width:100%;max-width:460px;height:100%;overflow-y:auto;border-left:1px solid var(--border)}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
+.dh h2{font-size:15px;font-weight:600;flex:1;margin-right:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.db{padding:20px}.df{margin-bottom:16px}
 .df label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
-.df .val{font-size:13px;line-height:1.6;color:var(--text)}
-.df .val a{color:var(--accent);word-break:break-all}
-.df2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.sep{border:none;border-top:1px solid var(--border);margin:16px 0}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s,transform .3s;transform:translateY(8px);pointer-events:none;border:1px solid var(--border);background:var(--surface);color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.toast.show{opacity:1;transform:translateY(0)}
-.toast.success{background:var(--green-bg);color:var(--green);border-color:var(--green-bg)}
-.toast.error{background:var(--red-bg);color:var(--red);border-color:var(--red-bg)}
-
-/* BANNER */
-.banner{background:var(--amber-bg);border:1px solid var(--amber-bg);border-radius:var(--radius);padding:11px 16px;font-size:13px;color:var(--amber);margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.banner.info{background:var(--accent-bg);color:var(--accent)}
-
-/* RESPONSIVE */
-@media(max-width:600px){
-  .form-grid{grid-template-columns:1fr}
-  .fg.full{grid-column:1}
-  .topbar-right{width:100%}
-}
+.df .val{font-size:13px;line-height:1.6}.df .val a{color:var(--accent);word-break:break-all}
+.df2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.sep{border:none;border-top:1px solid var(--border);margin:16px 0}
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s,transform .25s;transform:translateY(6px);pointer-events:none;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+.toast.on{opacity:1;transform:translateY(0)}.toast.ok{background:var(--green-bg);color:var(--green)}.toast.er{background:var(--red-bg);color:var(--red)}
+@media(max-width:600px){.fg{grid-template-columns:1fr}.fi.full{grid-column:1}}
 </style>
 </head>
 <body>
 <div class="app">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="topbar-left">
-      <h1>🐞 Error Tracker — TKA</h1>
-      <p>Shared across your team · Powered by Google Sheets</p>
-    </div>
-    <div class="topbar-right">
-      <div class="sync-status">
-        <div class="dot" id="syncDot"></div>
-        <span id="syncText">Connecting…</span>
-      </div>
-      <button class="btn btn-icon" onclick="loadErrors(true)" title="Refresh">↻</button>
-      <button class="btn btn-primary" onclick="openAdd()" id="addBtn" disabled>+ Add Error</button>
+    <div><h1>🐞 Error Tracker — TKA</h1><p>Shared team tracker · Powered by Google Sheets</p></div>
+    <div class="tr">
+      <div class="sync"><div class="dot spin" id="dot"></div><span id="stxt">Connecting…</span></div>
+      <button class="btn" style="padding:7px 9px;font-size:16px" onclick="load(true)" title="Refresh">↻</button>
+      <button class="btn btn-primary" id="addBtn" onclick="openAdd()" disabled>+ Add Error</button>
     </div>
   </div>
-
-  <!-- SETUP BANNER -->
-  <div class="banner" id="setupBanner" style="display:none">
-    ⚠️ Could not connect to Google Sheets. Make sure your Apps Script is deployed and accessible.
-    <button class="btn btn-sm" onclick="document.getElementById('setupBanner').style.display='none'" style="margin-left:auto">Dismiss</button>
-  </div>
-
-  <!-- STATS -->
+  <div class="banner warn" id="banner">⚠️ Cannot reach Google Sheets. Make sure the Apps Script is deployed with <strong>Anyone</strong> access.<button class="btn btn-sm" onclick="this.parentElement.style.display='none'" style="margin-left:auto">Dismiss</button></div>
   <div class="stats" id="stats">
-    <div class="stat"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--red)">—</div><div class="stat-label">Open</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--amber)">—</div><div class="stat-label">In Progress</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--green)">—</div><div class="stat-label">Resolved</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--red)">—</div><div class="stat-label">P1 Critical</div></div>
+    <div class="sc"><div class="sc-n">—</div><div class="sc-l">Total</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--red)">—</div><div class="sc-l">Open</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--amber)">—</div><div class="sc-l">In Progress</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--green)">—</div><div class="sc-l">Resolved</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--red)">—</div><div class="sc-l">P1 Critical</div></div>
   </div>
-
-  <!-- TOOLBAR -->
-  <div class="toolbar">
-    <input type="text" id="search" placeholder="Search errors, websites, names…" oninput="render()">
-    <select id="fStatus" onchange="render()">
-      <option value="">All statuses</option>
-      <option>Open</option><option>In Progress</option><option>Resolved</option>
-      <option>Pending</option><option>Won't Fix</option>
-    </select>
-    <select id="fPriority" onchange="render()">
-      <option value="">All priorities</option>
-      <option>P1 – Critical</option><option>P2 – High</option>
-      <option>P3 – Medium</option><option>P4 – Low</option>
-    </select>
-    <select id="fWebsite" onchange="render()">
-      <option value="">All websites</option>
-    </select>
-    <span class="count" id="rowCount"></span>
+  <div class="bar">
+    <input id="q" placeholder="Search errors, websites, names…" oninput="render()">
+    <select id="fS" onchange="render()"><option value="">All statuses</option><option>Open</option><option>In Progress</option><option>Resolved</option><option>Pending</option><option>Won't Fix</option></select>
+    <select id="fP" onchange="render()"><option value="">All priorities</option><option>P1 – Critical</option><option>P2 – High</option><option>P3 – Medium</option><option>P4 – Low</option></select>
+    <select id="fW" onchange="render()"><option value="">All websites</option></select>
+    <span class="cnt" id="cnt"></span>
   </div>
-
-  <!-- TABLE -->
-  <div class="table-wrap">
-    <div class="loading-wrap" id="loadingWrap">
-      <div class="spinner"></div>
-      <div style="font-size:13px">Connecting to Google Sheets…</div>
-    </div>
-    <table id="mainTable" style="display:none">
-      <thead>
-        <tr>
-          <th>#</th><th>Error Name</th><th>Website</th><th>URL</th>
-          <th>Status</th><th>Priority</th><th>Reported By</th>
-          <th>Developer</th><th>Date</th><th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
+  <div class="tw">
+    <div class="loading" id="loading"><div class="spin-ring"></div>Connecting to Google Sheets…</div>
+    <table id="tbl" style="display:none">
+      <thead><tr><th>#</th><th>Error Name</th><th>Website</th><th>URL</th><th>Status</th><th>Priority</th><th>Reported By</th><th>Developer</th><th>Date</th><th></th></tr></thead>
+      <tbody id="tb"></tbody>
     </table>
-    <div id="empty" class="empty" style="display:none">
-      <div class="empty-icon">🔍</div>
-      <div style="font-weight:500;margin-bottom:6px">No errors found</div>
-      <div style="font-size:12px">Try adjusting your filters or add a new error.</div>
-    </div>
+    <div class="empty" id="emp" style="display:none">No errors yet. Click "+ Add Error" to get started.</div>
   </div>
 </div>
-
-<!-- ADD / EDIT MODAL -->
-<div class="overlay" id="modal" style="display:none" onclick="bgClose(event,'modal')">
+<div class="overlay" id="modal" style="display:none" onclick="bgc(event,'modal')">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <h2 id="modal-title">Add error</h2>
-      <button class="close-btn" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="fg full">
-          <label>Error name <span>*</span></label>
-          <input id="f-name" placeholder="e.g. H1 tag missing on homepage">
-        </div>
-        <div class="fg">
-          <label>Website name <span>*</span></label>
-          <input id="f-website" placeholder="e.g. theknowledgeacademy.com">
-        </div>
-        <div class="fg">
-          <label>URL</label>
-          <input id="f-url" type="url" placeholder="https://...">
-        </div>
-        <div class="fg">
-          <label>Error status</label>
-          <select id="f-status">
-            <option>Open</option><option>In Progress</option>
-            <option>Pending</option><option>Resolved</option><option>Won't Fix</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Priority</label>
-          <select id="f-priority">
-            <option>P1 – Critical</option><option>P2 – High</option>
-            <option>P3 – Medium</option><option>P4 – Low</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Error given by (Reported by)</label>
-          <input id="f-by" placeholder="Name of the person who found it">
-        </div>
-        <div class="fg">
-          <label>Developer assigned</label>
-          <input id="f-dev" placeholder="Developer name">
-        </div>
-        <div class="fg full">
-          <label>Reference / screenshot link</label>
-          <input id="f-ref" placeholder="https://snipboard.io/… or any reference link">
-        </div>
-        <div class="fg full">
-          <label>Comments</label>
-          <textarea id="f-comments" placeholder="Describe the error, steps to reproduce, or any extra context…"></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" id="saveBtn" onclick="saveError()">Save error</button>
-    </div>
+    <div class="mh"><h2 id="mtitle">Add error</h2><button class="xbtn" onclick="closeMod()">✕</button></div>
+    <div class="mb"><div class="fg">
+      <div class="fi full"><label>Error name <em>*</em></label><input id="fn" placeholder="e.g. H1 tag missing on homepage"></div>
+      <div class="fi"><label>Website name <em>*</em></label><input id="fw" placeholder="e.g. theknowledgeacademy.com"></div>
+      <div class="fi"><label>URL</label><input id="fu" type="url" placeholder="https://…"></div>
+      <div class="fi"><label>Status</label><select id="fs"><option>Open</option><option>In Progress</option><option>Pending</option><option>Resolved</option><option>Won't Fix</option></select></div>
+      <div class="fi"><label>Priority</label><select id="fp"><option>P1 – Critical</option><option>P2 – High</option><option>P3 – Medium</option><option>P4 – Low</option></select></div>
+      <div class="fi"><label>Error given by (Reported by)</label><input id="fb" placeholder="Name of reporter"></div>
+      <div class="fi"><label>Developer assigned</label><input id="fd" placeholder="Developer name"></div>
+      <div class="fi full"><label>Reference / screenshot link</label><input id="fr" placeholder="https://snipboard.io/…"></div>
+      <div class="fi full"><label>Comments</label><textarea id="fc" placeholder="Describe the error, steps to reproduce, extra context…"></textarea></div>
+    </div></div>
+    <div class="mf"><button class="btn" onclick="closeMod()">Cancel</button><button class="btn btn-primary" id="sbtn" onclick="saveErr()">Save error</button></div>
   </div>
 </div>
-
-<!-- DETAIL DRAWER -->
-<div class="drawer-overlay" id="drawer" style="display:none" onclick="bgClose(event,'drawer')">
+<div class="dov" id="drawer" style="display:none" onclick="bgc(event,'drawer')">
   <div class="drawer" onclick="event.stopPropagation()">
-    <div class="drawer-head">
-      <h2 id="d-title"></h2>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-sm" onclick="editFromDrawer()">Edit</button>
-        <button class="close-btn" onclick="closeDrawer()">✕</button>
-      </div>
-    </div>
-    <div class="drawer-body" id="d-body"></div>
+    <div class="dh"><h2 id="dtitle"></h2><div style="display:flex;gap:6px"><button class="btn btn-sm" onclick="editFromDr()">Edit</button><button class="xbtn" onclick="closeDr()">✕</button></div></div>
+    <div class="db" id="dbody"></div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-const API = 'https://script.google.com/a/macros/theknowledgeacademy.com/s/AKfycbzKW6Q9cmon6th9Q8Vax-MNGx7dIZ9q-V107dZu8te-VdyNDhCbM_y_blA3EEUSVWt_/exec';
-let errors = [];
-let editId = null;
-let detailId = null;
-let connected = false;
-
-/* ── HELPERS ── */
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-function today() {
-  const d = new Date();
-  return `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getFullYear()}`;
-}
-function esc(s) {
-  return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
-}
-function toast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast show ' + type;
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 3000);
-}
-function setSyncStatus(state) {
-  const dot = document.getElementById('syncDot');
-  const txt = document.getElementById('syncText');
-  const addBtn = document.getElementById('addBtn');
-  if (state === 'live') {
-    dot.className = 'dot live'; txt.textContent = 'Live · Google Sheets';
-    addBtn.disabled = false; connected = true;
-  } else if (state === 'syncing') {
-    dot.className = 'dot syncing'; txt.textContent = 'Syncing…';
-  } else if (state === 'error') {
-    dot.className = 'dot error'; txt.textContent = 'Connection error';
-    addBtn.disabled = false;
-    document.getElementById('setupBanner').style.display = 'flex';
-  }
-}
-
-/* ── BADGE CLASSES ── */
-function statusClass(s) {
-  const m = { 'open':'b-open','in progress':'b-inprogress','resolved':'b-resolved','pending':'b-pending',"won't fix":'b-wontfix' };
-  return m[(s||'open').toLowerCase()] || 'b-open';
-}
-function prioClass(p) {
-  if (!p) return '';
-  if (p.startsWith('P1')) return 'p1';
-  if (p.startsWith('P2')) return 'p2';
-  if (p.startsWith('P3')) return 'p3';
-  if (p.startsWith('P4')) return 'p4';
-  return '';
-}
-
-/* ── API CALLS ── */
-async function apiGet() {
-  const res = await fetch(API + '?t=' + Date.now(), { method: 'GET' });
-  const json = await res.json();
-  return json.data || [];
-}
-
-async function apiPost(payload) {
-  const res = await fetch(API, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  });
-  return await res.json();
-}
-
-/* ── LOAD ── */
-async function loadErrors(manual = false) {
-  if (manual) { setSyncStatus('syncing'); toast('Refreshing…'); }
-  try {
-    errors = await apiGet();
-    setSyncStatus('live');
-    document.getElementById('loadingWrap').style.display = 'none';
-    document.getElementById('mainTable').style.display = '';
-    render();
-    if (manual) toast('Updated from Google Sheets ✓', 'success');
-  } catch(e) {
-    console.error(e);
-    setSyncStatus('error');
-    document.getElementById('loadingWrap').style.display = 'none';
-    document.getElementById('mainTable').style.display = '';
-    document.getElementById('empty').style.display = 'block';
-    toast('Could not connect to Google Sheets', 'error');
-  }
-}
-
-/* ── RENDER ── */
-function render() {
-  const q = (document.getElementById('search').value || '').toLowerCase();
-  const fS = document.getElementById('fStatus').value;
-  const fP = document.getElementById('fPriority').value;
-  const fW = document.getElementById('fWebsite').value;
-
-  const list = errors.filter(e => {
-    const txt = [e.name, e.website, e.url, e.by, e.dev, e.comments, e.ref].join(' ').toLowerCase();
-    return (!q || txt.includes(q)) && (!fS || e.status === fS) && (!fP || e.priority === fP) && (!fW || e.website === fW);
-  });
-
-  const tbody = document.getElementById('tbody');
-  const empty = document.getElementById('empty');
-  const thead = document.querySelector('thead');
-  tbody.innerHTML = '';
-
-  if (!list.length) {
-    empty.style.display = 'block'; thead.style.display = 'none';
-  } else {
-    empty.style.display = 'none'; thead.style.display = '';
-    list.forEach((e, i) => {
-      const tr = document.createElement('tr');
-      tr.onclick = () => openDrawer(e.id);
-      const urlShort = e.url ? e.url.replace(/^https?:\/\//,'').slice(0,28) + (e.url.length > 30 ? '…' : '') : '—';
-      tr.innerHTML = `
-        <td style="color:var(--muted);font-size:12px;width:32px">${i+1}</td>
-        <td class="ellipsis" style="font-weight:500;max-width:220px">${esc(e.name)}</td>
-        <td style="color:var(--muted);font-size:12px;white-space:nowrap">${esc(e.website||'—')}</td>
-        <td class="url-cell">${e.url ? `<a href="${esc(e.url)}" target="_blank" onclick="event.stopPropagation()">${urlShort}</a>` : '—'}</td>
-        <td><span class="badge ${statusClass(e.status)}">${esc(e.status||'Open')}</span></td>
-        <td><span class="badge ${prioClass(e.priority)}">${esc(e.priority||'—')}</span></td>
-        <td class="ellipsis" style="color:var(--muted)">${esc(e.by||'—')}</td>
-        <td class="ellipsis" style="color:var(--muted)">${esc(e.dev||'—')}</td>
-        <td style="font-size:11px;color:var(--muted);white-space:nowrap">${esc(e.date||'—')}</td>
-        <td onclick="event.stopPropagation()">
-          <div class="actions">
-            <button class="btn btn-sm" onclick="openEdit('${e.id}')">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="del('${e.id}')">Delete</button>
-          </div>
-        </td>`;
-      tbody.appendChild(tr);
-    });
-  }
-
-  document.getElementById('rowCount').textContent = `${list.length} of ${errors.length} errors`;
-  renderStats();
-  renderSiteFilter();
-}
-
-function renderStats() {
-  const t = errors.length;
-  const o = errors.filter(e => !e.status || e.status === 'Open').length;
-  const p = errors.filter(e => e.status === 'In Progress').length;
-  const r = errors.filter(e => e.status === 'Resolved').length;
-  const c = errors.filter(e => e.priority && e.priority.startsWith('P1')).length;
-  document.getElementById('stats').innerHTML = `
-    <div class="stat"><div class="stat-num">${t}</div><div class="stat-label">Total</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--red)">${o}</div><div class="stat-label">Open</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--amber)">${p}</div><div class="stat-label">In Progress</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--green)">${r}</div><div class="stat-label">Resolved</div></div>
-    <div class="stat"><div class="stat-num" style="color:var(--red)">${c}</div><div class="stat-label">P1 Critical</div></div>`;
-}
-
-function renderSiteFilter() {
-  const sel = document.getElementById('fWebsite');
-  const cur = sel.value;
-  const sites = [...new Set(errors.map(e => e.website).filter(Boolean))].sort();
-  sel.innerHTML = '<option value="">All websites</option>' + sites.map(s => `<option${s===cur?' selected':''}>${esc(s)}</option>`).join('');
-}
-
-/* ── ADD / EDIT ── */
-function openAdd() {
-  editId = null;
-  document.getElementById('modal-title').textContent = 'Add error';
-  ['name','website','url','by','dev','ref','comments'].forEach(f => document.getElementById('f-'+f).value = '');
-  document.getElementById('f-status').value = 'Open';
-  document.getElementById('f-priority').value = 'P3 – Medium';
-  document.getElementById('modal').style.display = 'flex';
-  setTimeout(() => document.getElementById('f-name').focus(), 50);
-}
-
-function openEdit(id) {
-  const e = errors.find(x => x.id === id); if (!e) return;
-  editId = id;
-  document.getElementById('modal-title').textContent = 'Edit error';
-  document.getElementById('f-name').value = e.name || '';
-  document.getElementById('f-website').value = e.website || '';
-  document.getElementById('f-url').value = e.url || '';
-  document.getElementById('f-status').value = e.status || 'Open';
-  document.getElementById('f-priority').value = e.priority || 'P3 – Medium';
-  document.getElementById('f-by').value = e.by || '';
-  document.getElementById('f-dev').value = e.dev || '';
-  document.getElementById('f-ref').value = e.ref || '';
-  document.getElementById('f-comments').value = e.comments || '';
-  document.getElementById('modal').style.display = 'flex';
-}
-
-function editFromDrawer() { closeDrawer(); openEdit(detailId); }
-function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-async function saveError() {
-  const name = document.getElementById('f-name').value.trim();
-  const website = document.getElementById('f-website').value.trim();
-  if (!name) { document.getElementById('f-name').focus(); toast('Error name is required', 'error'); return; }
-  if (!website) { document.getElementById('f-website').focus(); toast('Website name is required', 'error'); return; }
-
-  const saveBtn = document.getElementById('saveBtn');
-  saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
-
-  const data = {
-    id: editId || uid(), name, website,
-    url: document.getElementById('f-url').value.trim(),
-    status: document.getElementById('f-status').value,
-    priority: document.getElementById('f-priority').value,
-    by: document.getElementById('f-by').value.trim(),
-    dev: document.getElementById('f-dev').value.trim(),
-    ref: document.getElementById('f-ref').value.trim(),
-    comments: document.getElementById('f-comments').value.trim(),
-    date: editId ? (errors.find(x => x.id === editId)?.date || today()) : today(),
-  };
-
-  try {
-    setSyncStatus('syncing');
-    await apiPost({ action: editId ? 'update' : 'add', data });
-    if (editId) { const i = errors.findIndex(x => x.id === editId); if (i > -1) errors[i] = data; }
-    else errors.unshift(data);
-    setSyncStatus('live');
-    closeModal();
-    render();
-    toast(editId ? 'Error updated ✓' : 'Error added ✓', 'success');
-  } catch(e) {
-    setSyncStatus('error');
-    toast('Failed to save. Check your connection.', 'error');
-  } finally {
-    saveBtn.disabled = false; saveBtn.textContent = 'Save error';
-  }
-}
-
-/* ── DELETE ── */
-async function del(id) {
-  if (!confirm('Delete this error? This cannot be undone.')) return;
-  try {
-    setSyncStatus('syncing');
-    await apiPost({ action: 'delete', id });
-    errors = errors.filter(x => x.id !== id);
-    setSyncStatus('live');
-    render();
-    toast('Deleted', 'success');
-  } catch(e) {
-    setSyncStatus('error');
-    toast('Failed to delete. Try again.', 'error');
-  }
-}
-
-/* ── DRAWER ── */
-function openDrawer(id) {
-  const e = errors.find(x => x.id === id); if (!e) return;
-  detailId = id;
-  document.getElementById('d-title').textContent = e.name;
-  document.getElementById('d-body').innerHTML = `
-    <div class="df2">
-      <div class="df"><label>Status</label><div class="val"><span class="badge ${statusClass(e.status)}">${esc(e.status||'Open')}</span></div></div>
-      <div class="df"><label>Priority</label><div class="val"><span class="badge ${prioClass(e.priority)}">${esc(e.priority||'—')}</span></div></div>
-    </div><hr class="sep">
-    <div class="df2">
-      <div class="df"><label>Website</label><div class="val">${esc(e.website||'—')}</div></div>
-      <div class="df"><label>Date added</label><div class="val">${esc(e.date||'—')}</div></div>
-    </div>
-    <div class="df"><label>URL</label><div class="val">${e.url ? `<a href="${esc(e.url)}" target="_blank">${esc(e.url)}</a>` : '—'}</div></div>
-    <hr class="sep">
-    <div class="df2">
-      <div class="df"><label>Reported by</label><div class="val">${esc(e.by||'—')}</div></div>
-      <div class="df"><label>Developer</label><div class="val">${esc(e.dev||'—')}</div></div>
-    </div>
-    <hr class="sep">
-    <div class="df"><label>Comments</label><div class="val" style="white-space:pre-wrap">${esc(e.comments||'No comments.')}</div></div>
-    ${e.ref ? `<div class="df"><label>Reference</label><div class="val"><a href="${esc(e.ref)}" target="_blank">${esc(e.ref)}</a></div></div>` : ''}`;
-  document.getElementById('drawer').style.display = 'flex';
-}
-function closeDrawer() { document.getElementById('drawer').style.display = 'none'; }
-
-function bgClose(ev, id) {
-  if (ev.target === document.getElementById(id)) {
-    id === 'modal' ? closeModal() : closeDrawer();
-  }
-}
-
-/* ── KEYBOARD ── */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); closeDrawer(); }
-});
-
-/* ── AUTO REFRESH every 30 seconds ── */
-loadErrors();
-setInterval(() => loadErrors(false), 30000);
+const API='https://script.google.com/macros/s/AKfycbz5zlc9JNB-eIgIpgH2FdUbk5rwOYru5du7J5VOBCyiVSdMNQ8mblYWUObmdSuISr0/exec';
+let rows=[],editId=null,detailId=null;
+const g=id=>document.getElementById(id);
+function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function today(){const d=new Date();return`${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getFullYear()}`}
+function toast(msg,type=''){const t=g('toast');t.textContent=msg;t.className='toast on'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3200)}
+function setSync(state){const dot=g('dot'),txt=g('stxt'),btn=g('addBtn');if(state==='live'){dot.className='dot live';txt.textContent='Live · Google Sheets';btn.disabled=false}else if(state==='loading'){dot.className='dot spin';txt.textContent='Syncing…'}else{dot.className='dot err';txt.textContent='Connection error';btn.disabled=false;g('banner').style.display='flex'}}
+function sc(s){const m={'open':'b-open','in progress':'b-ip','resolved':'b-res','pending':'b-pen',"won't fix":'b-wf'};return m[(s||'open').toLowerCase()]||'b-open'}
+function pc(p){if(!p)return'';if(p.startsWith('P1'))return'p1';if(p.startsWith('P2'))return'p2';if(p.startsWith('P3'))return'p3';if(p.startsWith('P4'))return'p4';return''}
+function fetchJSONP(url){return new Promise((resolve,reject)=>{const cbName='cb_'+uid();const script=document.createElement('script');const timer=setTimeout(()=>{cleanup();reject(new Error('Timeout'))},12000);function cleanup(){try{delete window[cbName];document.head.removeChild(script)}catch(e){}clearTimeout(timer)}window[cbName]=data=>{cleanup();resolve(data)};script.src=url+'&callback='+cbName;script.onerror=()=>{cleanup();reject(new Error('Load failed'))};document.head.appendChild(script)})}
+async function load(manual=false){if(manual){setSync('loading');toast('Refreshing…')}try{const json=await fetchJSONP(API+'?t='+Date.now());rows=json.data||[];setSync('live');g('loading').style.display='none';g('tbl').style.display='';render();if(manual)toast('Updated from Google Sheets ✓','ok')}catch(err){try{rows=JSON.parse(localStorage.getItem('tka-err')||'[]')}catch(e){rows=[]}setSync('error');g('loading').style.display='none';g('tbl').style.display='';render()}}
+async function post(payload){try{await fetch(API,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})}catch(e){}}
+function saveLoc(){try{localStorage.setItem('tka-err',JSON.stringify(rows))}catch(e){}}
+function render(){const q=(g('q').value||'').toLowerCase();const fS=g('fS').value,fP=g('fP').value,fW=g('fW').value;const list=rows.filter(r=>{const t=[r.name,r.website,r.url,r.by,r.dev,r.comments,r.ref].join(' ').toLowerCase();return(!q||t.includes(q))&&(!fS||r.status===fS)&&(!fP||r.priority===fP)&&(!fW||r.website===fW)});const tb=g('tb'),emp=g('emp'),thead=document.querySelector('thead');tb.innerHTML='';if(!list.length){emp.style.display='block';thead.style.display='none'}else{emp.style.display='none';thead.style.display='';list.forEach((r,i)=>{const tr=document.createElement('tr');tr.onclick=()=>openDr(r.id);const us=r.url?r.url.replace(/^https?:\/\//,'').slice(0,26)+(r.url.length>28?'…':''):'—';tr.innerHTML=`<td style="color:var(--muted);font-size:12px;width:28px">${i+1}</td><td class="el" style="font-weight:500;max-width:200px">${esc(r.name)}</td><td style="color:var(--muted);font-size:12px;white-space:nowrap">${esc(r.website||'—')}</td><td class="uc">${r.url?`<a href="${esc(r.url)}" target="_blank" onclick="event.stopPropagation()">${us}</a>`:'—'}</td><td><span class="badge ${sc(r.status)}">${esc(r.status||'Open')}</span></td><td><span class="badge ${pc(r.priority)}">${esc(r.priority||'—')}</span></td><td class="el" style="color:var(--muted)">${esc(r.by||'—')}</td><td class="el" style="color:var(--muted)">${esc(r.dev||'—')}</td><td style="font-size:11px;color:var(--muted);white-space:nowrap">${esc(r.date||'—')}</td><td onclick="event.stopPropagation()"><div class="acts"><button class="btn btn-sm" onclick="openEdit('${r.id}')">Edit</button><button class="btn btn-sm btn-del" onclick="del('${r.id}')">Delete</button></div></td>`;tb.appendChild(tr)})}g('cnt').textContent=`${list.length} of ${rows.length} errors`;renderStats();renderSites()}
+function renderStats(){const t=rows.length,o=rows.filter(r=>!r.status||r.status==='Open').length,ip=rows.filter(r=>r.status==='In Progress').length,rs=rows.filter(r=>r.status==='Resolved').length,p1=rows.filter(r=>r.priority&&r.priority.startsWith('P1')).length;g('stats').innerHTML=`<div class="sc"><div class="sc-n">${t}</div><div class="sc-l">Total</div></div><div class="sc"><div class="sc-n" style="color:var(--red)">${o}</div><div class="sc-l">Open</div></div><div class="sc"><div class="sc-n" style="color:var(--amber)">${ip}</div><div class="sc-l">In Progress</div></div><div class="sc"><div class="sc-n" style="color:var(--green)">${rs}</div><div class="sc-l">Resolved</div></div><div class="sc"><div class="sc-n" style="color:var(--red)">${p1}</div><div class="sc-l">P1 Critical</div></div>`}
+function renderSites(){const sel=g('fW'),cur=sel.value;const sites=[...new Set(rows.map(r=>r.website).filter(Boolean))].sort();sel.innerHTML='<option value="">All websites</option>'+sites.map(s=>`<option${s===cur?' selected':''}>${esc(s)}</option>`).join('')}
+function openAdd(){editId=null;g('mtitle').textContent='Add error';['fn','fw','fu','fb','fd','fr','fc'].forEach(id=>g(id).value='');g('fs').value='Open';g('fp').value='P3 – Medium';g('modal').style.display='flex';setTimeout(()=>g('fn').focus(),50)}
+function openEdit(id){const r=rows.find(x=>x.id===id);if(!r)return;editId=id;g('mtitle').textContent='Edit error';g('fn').value=r.name||'';g('fw').value=r.website||'';g('fu').value=r.url||'';g('fs').value=r.status||'Open';g('fp').value=r.priority||'P3 – Medium';g('fb').value=r.by||'';g('fd').value=r.dev||'';g('fr').value=r.ref||'';g('fc').value=r.comments||'';g('modal').style.display='flex'}
+function editFromDr(){closeDr();openEdit(detailId)}
+function closeMod(){g('modal').style.display='none'}
+async function saveErr(){const name=g('fn').value.trim(),website=g('fw').value.trim();if(!name){g('fn').focus();toast('Error name is required','er');return}if(!website){g('fw').focus();toast('Website name is required','er');return}const sb=g('sbtn');sb.disabled=true;sb.textContent='Saving…';const data={id:editId||uid(),name,website,url:g('fu').value.trim(),status:g('fs').value,priority:g('fp').value,by:g('fb').value.trim(),dev:g('fd').value.trim(),ref:g('fr').value.trim(),comments:g('fc').value.trim(),date:editId?(rows.find(x=>x.id===editId)?.date||today()):today()};if(editId){const i=rows.findIndex(x=>x.id===editId);if(i>-1)rows[i]=data}else rows.unshift(data);saveLoc();closeMod();render();toast(editId?'Saving update…':'Saving error…');await post({action:editId?'update':'add',data});toast(editId?'Updated ✓':'Added ✓','ok');sb.disabled=false;sb.textContent='Save error';setTimeout(()=>load(false),2500)}
+async function del(id){if(!confirm('Delete this error? This cannot be undone.'))return;rows=rows.filter(x=>x.id!==id);saveLoc();render();toast('Deleted','ok');await post({action:'delete',id});setTimeout(()=>load(false),2500)}
+function openDr(id){const r=rows.find(x=>x.id===id);if(!r)return;detailId=id;g('dtitle').textContent=r.name;g('dbody').innerHTML=`<div class="df2"><div class="df"><label>Status</label><div class="val"><span class="badge ${sc(r.status)}">${esc(r.status||'Open')}</span></div></div><div class="df"><label>Priority</label><div class="val"><span class="badge ${pc(r.priority)}">${esc(r.priority||'—')}</span></div></div></div><hr class="sep"><div class="df2"><div class="df"><label>Website</label><div class="val">${esc(r.website||'—')}</div></div><div class="df"><label>Date added</label><div class="val">${esc(r.date||'—')}</div></div></div><div class="df"><label>URL</label><div class="val">${r.url?`<a href="${esc(r.url)}" target="_blank">${esc(r.url)}</a>`:'—'}</div></div><hr class="sep"><div class="df2"><div class="df"><label>Reported by</label><div class="val">${esc(r.by||'—')}</div></div><div class="df"><label>Developer</label><div class="val">${esc(r.dev||'—')}</div></div></div><hr class="sep"><div class="df"><label>Comments</label><div class="val" style="white-space:pre-wrap">${esc(r.comments||'No comments.')}</div></div>${r.ref?`<div class="df"><label>Reference</label><div class="val"><a href="${esc(r.ref)}" target="_blank">${esc(r.ref)}</a></div></div>`:''}`;g('drawer').style.display='flex'}
+function closeDr(){g('drawer').style.display='none'}
+function bgc(ev,id){if(ev.target===g(id)){id==='modal'?closeMod():closeDr()}}
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'){closeMod();closeDr()}});
+load();setInterval(()=>load(false),30000);
 </script>
 </body>
 </html>
