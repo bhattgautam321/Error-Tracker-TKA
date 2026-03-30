@@ -9,15 +9,39 @@
 :root{--bg:#fff;--surface:#f8f9fa;--border:#e9ecef;--border2:#dee2e6;--text:#212529;--muted:#6c757d;--accent:#2f80ed;--accent-bg:#e8f1fd;--green:#2d8a4e;--green-bg:#e6f4ec;--red:#c0392b;--red-bg:#fdecea;--amber:#92610a;--amber-bg:#fef3e2;--purple:#6741d9;--purple-bg:#f0ecff;--r:8px;--rl:12px}
 @media(prefers-color-scheme:dark){:root{--bg:#1a1b1e;--surface:#25262b;--border:#373a40;--border2:#495057;--text:#c9cdd4;--muted:#868e96;--accent:#4dabf7;--accent-bg:#1a2e45;--green:#40c074;--green-bg:#1a2e22;--red:#fa5252;--red-bg:#2e1a1a;--amber:#fcc419;--amber-bg:#2e2510;--purple:#9775fa;--purple-bg:#241d3a}}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
-.app{max-width:1400px;margin:0 auto;padding:24px 20px}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+
+/* ── PASSWORD GATE ── */
+#gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-box{width:100%;max-width:380px;text-align:center}
+.gate-logo{font-size:36px;margin-bottom:16px}
+.gate-box h1{font-size:20px;font-weight:600;margin-bottom:6px}
+.gate-box p{font-size:13px;color:var(--muted);margin-bottom:28px}
+.gate-field{position:relative;margin-bottom:12px}
+.gate-field input{width:100%;padding:11px 44px 11px 14px;font-size:14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;font-family:inherit}
+.gate-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,128,237,.1)}
+.gate-field input.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.1)}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:2px}
+.gate-btn{width:100%;padding:11px;font-size:14px;font-weight:600;border:none;border-radius:var(--r);background:var(--text);color:var(--bg);cursor:pointer;transition:opacity .15s}
+.gate-btn:hover{opacity:.85}
+.gate-btn:disabled{opacity:.5;cursor:not-allowed}
+.gate-error{font-size:13px;color:var(--red);margin-top:10px;min-height:18px}
+.gate-hint{font-size:12px;color:var(--muted);margin-top:16px}
+.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+/* ── MAIN APP ── */
+#app{display:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;padding:24px 20px 0}
 .topbar h1{font-size:20px;font-weight:600}.topbar p{font-size:12px;color:var(--muted);margin-top:3px}
+.wrap{max-width:1400px;margin:0 auto;padding:0 20px 24px}
 .tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .sync{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}.dot.live{background:var(--green)}.dot.err{background:var(--red)}.dot.spin{background:var(--amber);animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .btn{border-radius:var(--r);padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text);display:inline-flex;align-items:center;gap:5px;transition:opacity .15s}.btn:hover{opacity:.8}.btn:disabled{opacity:.4;cursor:not-allowed}
 .btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}.btn-sm{padding:4px 9px;font-size:12px}.btn-del{border-color:transparent;color:var(--red)}.btn-del:hover{background:var(--red-bg)}
+.btn-logout{border-color:transparent;color:var(--muted);font-size:12px;padding:5px 10px}
+.btn-logout:hover{background:var(--surface);color:var(--red)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}.sc-n{font-size:24px;font-weight:600;line-height:1;margin-bottom:4px}.sc-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
@@ -39,7 +63,7 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer;transition:backgroun
 .loading{padding:56px;text-align:center;color:var(--muted);font-size:13px}
 .spin-ring{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite;margin:0 auto 12px}
 @keyframes rot{to{transform:rotate(360deg)}}
-.banner{border-radius:var(--r);padding:11px 16px;font-size:13px;margin-bottom:16px;align-items:center;gap:8px;flex-wrap:wrap;display:none}.banner.warn{background:var(--amber-bg);color:var(--amber)}.banner.info{background:var(--accent-bg);color:var(--accent)}
+.banner{border-radius:var(--r);padding:11px 16px;font-size:13px;margin-bottom:16px;align-items:center;gap:8px;flex-wrap:wrap;display:none}.banner.warn{background:var(--amber-bg);color:var(--amber)}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
 .modal{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);width:100%;max-width:640px}
 .mh{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}.mh h2{font-size:16px;font-weight:600}
@@ -60,12 +84,29 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer;transition:backgroun
 .df2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.sep{border:none;border-top:1px solid var(--border);margin:16px 0}
 .toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s,transform .25s;transform:translateY(6px);pointer-events:none;border:1px solid var(--border);background:var(--surface);color:var(--text)}
 .toast.on{opacity:1;transform:translateY(0)}.toast.ok{background:var(--green-bg);color:var(--green)}.toast.er{background:var(--red-bg);color:var(--red)}
-.notion-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted)}
 @media(max-width:600px){.fg{grid-template-columns:1fr}.fi.full{grid-column:1}}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ══ PASSWORD GATE ══ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">🐞</div>
+    <h1>Error Tracker — TKA</h1>
+    <p>This dashboard is restricted to authorised team members only.<br>Enter the team password to continue.</p>
+    <div class="gate-field" id="gateField">
+      <input type="password" id="pwInput" placeholder="Enter team password…" onkeydown="if(event.key==='Enter')checkPw()">
+      <button class="eye-btn" onclick="toggleEye()" id="eyeBtn" title="Show / hide">👁</button>
+    </div>
+    <button class="gate-btn" id="gateBtn" onclick="checkPw()">Access Dashboard</button>
+    <div class="gate-error" id="gateErr"></div>
+    <p class="gate-hint">Contact your team admin if you don't have the password.</p>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app">
   <div class="topbar">
     <div>
       <h1>🐞 Error Tracker — TKA</h1>
@@ -75,48 +116,51 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer;transition:backgroun
       <div class="sync"><div class="dot spin" id="dot"></div><span id="stxt">Connecting…</span></div>
       <button class="btn" style="padding:7px 9px;font-size:16px" onclick="loadErrors(true)" title="Refresh">↻</button>
       <button class="btn btn-primary" id="addBtn" onclick="openAdd()" disabled>+ Add Error</button>
+      <button class="btn btn-logout" onclick="logout()" title="Lock dashboard">🔒 Lock</button>
     </div>
   </div>
 
-  <div class="banner warn" id="banner">
-    ⚠️ Cannot connect to Notion. Check that your integration token is correct and the integration is connected to your database.
-    <button class="btn btn-sm" onclick="this.parentElement.style.display='none'" style="margin-left:auto">Dismiss</button>
-  </div>
+  <div class="wrap">
+    <div class="banner warn" id="banner">
+      ⚠️ Cannot connect to Notion. Check that your integration token is correct and the integration is connected to the database.
+      <button class="btn btn-sm" onclick="this.parentElement.style.display='none'" style="margin-left:auto">Dismiss</button>
+    </div>
 
-  <div class="stats" id="stats">
-    <div class="sc"><div class="sc-n">—</div><div class="sc-l">Total</div></div>
-    <div class="sc"><div class="sc-n" style="color:var(--red)">—</div><div class="sc-l">Open</div></div>
-    <div class="sc"><div class="sc-n" style="color:var(--amber)">—</div><div class="sc-l">In Progress</div></div>
-    <div class="sc"><div class="sc-n" style="color:var(--green)">—</div><div class="sc-l">Resolved</div></div>
-    <div class="sc"><div class="sc-n" style="color:var(--red)">—</div><div class="sc-l">P1 Critical</div></div>
-  </div>
+    <div class="stats" id="stats">
+      <div class="sc"><div class="sc-n">—</div><div class="sc-l">Total</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--red)">—</div><div class="sc-l">Open</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--amber)">—</div><div class="sc-l">In Progress</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--green)">—</div><div class="sc-l">Resolved</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--red)">—</div><div class="sc-l">P1 Critical</div></div>
+    </div>
 
-  <div class="bar">
-    <input id="q" placeholder="Search errors, websites, names…" oninput="render()">
-    <select id="fS" onchange="render()">
-      <option value="">All statuses</option>
-      <option>Open</option><option>In Progress</option><option>Resolved</option>
-      <option>Pending</option><option>Won't Fix</option>
-    </select>
-    <select id="fP" onchange="render()">
-      <option value="">All priorities</option>
-      <option>P1 – Critical</option><option>P2 – High</option>
-      <option>P3 – Medium</option><option>P4 – Low</option>
-    </select>
-    <select id="fW" onchange="render()"><option value="">All websites</option></select>
-    <span class="cnt" id="cnt"></span>
-  </div>
+    <div class="bar">
+      <input id="q" placeholder="Search errors, websites, names…" oninput="render()">
+      <select id="fS" onchange="render()">
+        <option value="">All statuses</option>
+        <option>Open</option><option>In Progress</option><option>Resolved</option>
+        <option>Pending</option><option>Won't Fix</option>
+      </select>
+      <select id="fP" onchange="render()">
+        <option value="">All priorities</option>
+        <option>P1 – Critical</option><option>P2 – High</option>
+        <option>P3 – Medium</option><option>P4 – Low</option>
+      </select>
+      <select id="fW" onchange="render()"><option value="">All websites</option></select>
+      <span class="cnt" id="cnt"></span>
+    </div>
 
-  <div class="tw">
-    <div class="loading" id="loading"><div class="spin-ring"></div>Connecting to Notion…</div>
-    <table id="tbl" style="display:none">
-      <thead><tr>
-        <th>#</th><th>Error Name</th><th>Website</th><th>URL</th>
-        <th>Status</th><th>Priority</th><th>Reported By</th><th>Developer</th><th>Date</th><th></th>
-      </tr></thead>
-      <tbody id="tb"></tbody>
-    </table>
-    <div class="empty" id="emp" style="display:none">No errors yet. Click "+ Add Error" to get started.</div>
+    <div class="tw">
+      <div class="loading" id="loading"><div class="spin-ring"></div>Connecting to Notion…</div>
+      <table id="tbl" style="display:none">
+        <thead><tr>
+          <th>#</th><th>Error Name</th><th>Website</th><th>URL</th>
+          <th>Status</th><th>Priority</th><th>Reported By</th><th>Developer</th><th>Date</th><th></th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+      <div class="empty" id="emp" style="display:none">No errors yet. Click "+ Add Error" to get started.</div>
+    </div>
   </div>
 </div>
 
@@ -155,6 +199,65 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer;transition:backgroun
 <div class="toast" id="toast"></div>
 
 <script>
+/* ══ PASSWORD GATE ══ */
+const PASS_HASH = '8e6c3cddf04027ce8df792be5f27e808b4f7f70437a03e3bbf03cba7d576d1f3';
+
+async function hashPw(pw){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPw(){
+  const input = document.getElementById('pwInput');
+  const errEl = document.getElementById('gateErr');
+  const btn   = document.getElementById('gateBtn');
+  const field = document.getElementById('gateField');
+  const pw    = input.value.trim();
+  if(!pw){ errEl.textContent = 'Please enter the password.'; return; }
+  btn.disabled = true; btn.textContent = 'Checking…';
+  const hash = await hashPw(pw);
+  if(hash === PASS_HASH){
+    sessionStorage.setItem('tka-auth','1');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display  = 'block';
+    loadErrors();
+  } else {
+    errEl.textContent = '❌ Incorrect password. Please try again.';
+    input.value = '';
+    input.classList.add('err');
+    field.classList.add('shake');
+    setTimeout(()=>{ field.classList.remove('shake'); input.classList.remove('err'); }, 500);
+    btn.disabled = false; btn.textContent = 'Access Dashboard';
+    setTimeout(()=>{ input.focus(); }, 100);
+  }
+}
+
+function toggleEye(){
+  const inp = document.getElementById('pwInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function logout(){
+  if(!confirm('Lock the dashboard? You will need to enter the password again.')) return;
+  sessionStorage.removeItem('tka-auth');
+  document.getElementById('app').style.display  = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('gateErr').textContent = '';
+}
+
+/* Check session on load */
+window.addEventListener('DOMContentLoaded', ()=>{
+  if(sessionStorage.getItem('tka-auth') === '1'){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display  = 'block';
+    loadErrors();
+  } else {
+    setTimeout(()=> document.getElementById('pwInput').focus(), 100);
+  }
+});
+
+/* ══ NOTION CONFIG ══ */
 const NOTION_TOKEN = 'ntn_J13140713621w8nVgFVDR2LhpE9aKbZUVwNBYFn5Awydhd';
 const DATABASE_ID  = 'a7f0787b82e542998853e9257f763e9c';
 const PROXY        = 'https://corsproxy.io/?';
@@ -183,82 +286,55 @@ function sc(s){
 }
 function pc(p){ if(!p)return''; if(p.startsWith('P1'))return'p1'; if(p.startsWith('P2'))return'p2'; if(p.startsWith('P3'))return'p3'; if(p.startsWith('P4'))return'p4'; return''; }
 
-/* ── NOTION API HELPERS ── */
-function notionHeaders(){
-  return {
-    'Authorization': 'Bearer ' + NOTION_TOKEN,
-    'Notion-Version': NOTION_VER,
-    'Content-Type': 'application/json'
-  };
-}
+function notionHeaders(){ return {'Authorization':'Bearer '+NOTION_TOKEN,'Notion-Version':NOTION_VER,'Content-Type':'application/json'}; }
+function notionUrl(path){ return PROXY + encodeURIComponent('https://api.notion.com/v1/' + path); }
 
-function notionUrl(path){
-  return PROXY + encodeURIComponent('https://api.notion.com/v1/' + path);
-}
-
-/* Parse a Notion page into a flat row object */
 function parsePage(page){
   const p = page.properties;
   function txt(prop){ return prop?.rich_text?.[0]?.plain_text || prop?.title?.[0]?.plain_text || ''; }
   function sel(prop){ return prop?.select?.name || ''; }
   function url(prop){ return prop?.url || ''; }
-  return {
-    id:       page.id,
-    name:     txt(p.name || p.Name),
-    website:  txt(p.website),
-    url:      url(p.url),
-    status:   sel(p.status),
-    priority: sel(p.priority),
-    by:       txt(p.by),
-    dev:      txt(p.dev),
-    ref:      url(p.ref),
-    comments: txt(p.comments),
-    date:     txt(p.date),
-  };
+  return { id:page.id, name:txt(p.name||p.Name), website:txt(p.website), url:url(p.url), status:sel(p.status), priority:sel(p.priority), by:txt(p.by), dev:txt(p.dev), ref:url(p.ref), comments:txt(p.comments), date:txt(p.date) };
 }
 
-/* Build Notion properties payload from a flat row */
 function buildProps(data){
   return {
-    name:     { title:     [{ text: { content: data.name     || '' } }] },
-    website:  { rich_text: [{ text: { content: data.website  || '' } }] },
-    url:      { url: data.url || null },
+    name:     { title:     [{ text:{ content: data.name    ||'' }}] },
+    website:  { rich_text: [{ text:{ content: data.website ||'' }}] },
+    url:      { url: data.url  || null },
     status:   { select: { name: data.status   || 'Open' } },
     priority: { select: { name: data.priority || 'P3 – Medium' } },
-    by:       { rich_text: [{ text: { content: data.by       || '' } }] },
-    dev:      { rich_text: [{ text: { content: data.dev      || '' } }] },
-    ref:      { url: data.ref || null },
-    comments: { rich_text: [{ text: { content: data.comments || '' } }] },
-    date:     { rich_text: [{ text: { content: data.date     || today() } }] },
+    by:       { rich_text: [{ text:{ content: data.by       ||'' }}] },
+    dev:      { rich_text: [{ text:{ content: data.dev      ||'' }}] },
+    ref:      { url: data.ref  || null },
+    comments: { rich_text: [{ text:{ content: data.comments ||'' }}] },
+    date:     { rich_text: [{ text:{ content: data.date     || today() }}] },
   };
 }
 
-/* ── LOAD ── */
 async function loadErrors(manual=false){
   if(manual){ setSync('loading'); toast('Refreshing…'); }
   try{
-    const res = await fetch(notionUrl(`databases/${DATABASE_ID}/query`), {
-      method: 'POST',
-      headers: notionHeaders(),
-      body: JSON.stringify({ page_size: 100, sorts: [{ timestamp: 'created_time', direction: 'descending' }] })
+    const res = await fetch(notionUrl(`databases/${DATABASE_ID}/query`),{
+      method:'POST', headers:notionHeaders(),
+      body: JSON.stringify({ page_size:100, sorts:[{ timestamp:'created_time', direction:'descending' }] })
     });
-    if(!res.ok){ const e = await res.json(); throw new Error(e.message || res.status); }
+    if(!res.ok){ const e=await res.json(); throw new Error(e.message||res.status); }
     const data = await res.json();
-    rows = data.results.map(parsePage).filter(r => r.name);
+    rows = data.results.map(parsePage).filter(r=>r.name);
     setSync('live');
     g('loading').style.display='none'; g('tbl').style.display='';
     render();
     if(manual) toast('Updated from Notion ✓','ok');
   } catch(err){
-    console.error('Notion error:', err.message);
-    try{ rows = JSON.parse(localStorage.getItem('tka-notion')||'[]'); }catch(e){ rows=[]; }
+    console.error('Notion error:',err.message);
+    try{ rows=JSON.parse(localStorage.getItem('tka-notion')||'[]'); }catch(e){ rows=[]; }
     setSync('error');
     g('loading').style.display='none'; g('tbl').style.display='';
     render();
   }
 }
 
-/* ── RENDER ── */
 function render(){
   const q=(g('q').value||'').toLowerCase();
   const fS=g('fS').value, fP=g('fP').value, fW=g('fW').value;
@@ -314,7 +390,6 @@ function renderSites(){
   sel.innerHTML='<option value="">All websites</option>'+sites.map(s=>`<option${s===cur?' selected':''}>${esc(s)}</option>`).join('');
 }
 
-/* ── ADD / EDIT ── */
 function openAdd(){
   editId=null; g('mtitle').textContent='Add error';
   ['fn','fw','fu','fb','fd','fr','fc'].forEach(id=>g(id).value='');
@@ -338,76 +413,37 @@ async function saveErr(){
   if(!name){ g('fn').focus(); toast('Error name is required','er'); return; }
   if(!website){ g('fw').focus(); toast('Website name is required','er'); return; }
   const sb=g('sbtn'); sb.disabled=true; sb.textContent='Saving…';
-
-  const data={
-    name, website,
-    url:      g('fu').value.trim(),
-    status:   g('fs').value,
-    priority: g('fp').value,
-    by:       g('fb').value.trim(),
-    dev:      g('fd').value.trim(),
-    ref:      g('fr').value.trim(),
-    comments: g('fc').value.trim(),
-    date:     editId ? (rows.find(x=>x.id===editId)?.date || today()) : today()
-  };
-
+  const data={ name, website, url:g('fu').value.trim(), status:g('fs').value, priority:g('fp').value, by:g('fb').value.trim(), dev:g('fd').value.trim(), ref:g('fr').value.trim(), comments:g('fc').value.trim(), date:editId?(rows.find(x=>x.id===editId)?.date||today()):today() };
   try{
     setSync('loading');
     if(editId){
-      /* Update existing page */
-      const res = await fetch(notionUrl(`pages/${editId}`), {
-        method: 'PATCH',
-        headers: notionHeaders(),
-        body: JSON.stringify({ properties: buildProps(data) })
-      });
+      const res=await fetch(notionUrl(`pages/${editId}`),{ method:'PATCH', headers:notionHeaders(), body:JSON.stringify({ properties:buildProps(data) }) });
       if(!res.ok) throw new Error(await res.text());
-      const updated = await res.json();
-      const i = rows.findIndex(x=>x.id===editId);
-      if(i>-1) rows[i] = parsePage(updated);
+      const updated=await res.json();
+      const i=rows.findIndex(x=>x.id===editId); if(i>-1) rows[i]=parsePage(updated);
     } else {
-      /* Create new page */
-      const res = await fetch(notionUrl('pages'), {
-        method: 'POST',
-        headers: notionHeaders(),
-        body: JSON.stringify({
-          parent: { database_id: DATABASE_ID },
-          properties: buildProps(data)
-        })
-      });
+      const res=await fetch(notionUrl('pages'),{ method:'POST', headers:notionHeaders(), body:JSON.stringify({ parent:{ database_id:DATABASE_ID }, properties:buildProps(data) }) });
       if(!res.ok) throw new Error(await res.text());
-      const created = await res.json();
-      rows.unshift(parsePage(created));
+      rows.unshift(parsePage(await res.json()));
     }
-    localStorage.setItem('tka-notion', JSON.stringify(rows));
+    localStorage.setItem('tka-notion',JSON.stringify(rows));
     setSync('live'); closeMod(); render();
-    toast(editId ? 'Updated ✓' : 'Added ✓', 'ok');
-  } catch(err){
-    console.error('Save error:', err.message);
-    setSync('error');
-    toast('Failed to save — check console', 'er');
-  }
+    toast(editId?'Updated ✓':'Added ✓','ok');
+  } catch(err){ console.error(err); setSync('error'); toast('Failed to save','er'); }
   sb.disabled=false; sb.textContent='Save error';
 }
 
-/* ── DELETE (archive in Notion) ── */
 async function del(id){
   if(!confirm('Delete this error? This cannot be undone.')) return;
   try{
     setSync('loading');
-    await fetch(notionUrl(`pages/${id}`), {
-      method: 'PATCH',
-      headers: notionHeaders(),
-      body: JSON.stringify({ archived: true })
-    });
+    await fetch(notionUrl(`pages/${id}`),{ method:'PATCH', headers:notionHeaders(), body:JSON.stringify({ archived:true }) });
     rows=rows.filter(x=>x.id!==id);
-    localStorage.setItem('tka-notion', JSON.stringify(rows));
+    localStorage.setItem('tka-notion',JSON.stringify(rows));
     setSync('live'); render(); toast('Deleted','ok');
-  } catch(err){
-    setSync('error'); toast('Failed to delete','er');
-  }
+  } catch(err){ setSync('error'); toast('Failed to delete','er'); }
 }
 
-/* ── DRAWER ── */
 function openDr(id){
   const r=rows.find(x=>x.id===id); if(!r)return;
   detailId=id; g('dtitle').textContent=r.name;
@@ -434,9 +470,7 @@ function openDr(id){
 function closeDr(){ g('drawer').style.display='none'; }
 function bgc(ev,id){ if(ev.target===g(id)){ id==='modal'?closeMod():closeDr(); } }
 document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ closeMod(); closeDr(); } });
-
-loadErrors();
-setInterval(()=>loadErrors(false), 30000);
+setInterval(()=>{ if(sessionStorage.getItem('tka-auth')==='1') loadErrors(false); }, 30000);
 </script>
 </body>
 </html>
