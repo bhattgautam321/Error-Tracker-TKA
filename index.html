@@ -200,7 +200,7 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer;transition:backgroun
 
 <script>
 /* ══ PASSWORD GATE ══ */
-const PASS_HASH = '8e6c3cddf04027ce8df792be5f27e808b4f7f70437a03e3bbf03cba7d576d1f3';
+const PASS_HASH = 'd39ad13b1bab353c93549761eb834f0492ce7a2279172565557c6034df856e62';
 
 async function hashPw(pw){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
